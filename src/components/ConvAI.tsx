@@ -68,8 +68,9 @@ export function ConvAI() {
   let init_agent_type = Math.random() < 0.5 ? "inbound" : "outbound";
   init_agent_type = "inbound";
   const [agentType, setAgentType] = useState<"inbound" | "outbound">(
-    init_agent_type
+    init_agent_type as "inbound" | "outbound"
   );
+
   const [isLoading, setIsLoading] = useState(false);
   const [latestUserMessage, setLatestUserMessage] = useState<string>("");
   const [sessionId] = useState(
