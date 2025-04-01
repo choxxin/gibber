@@ -1,36 +1,32 @@
-import { OpenAI } from '@posthog/ai' // @TODO: As posthog integration was removed, this should be imported from other place
-import { NextResponse } from 'next/server'
-
+import OpenAI from "openai"; // Correct OpenAI import
+import { NextResponse } from "next/server";
 
 const openai = new OpenAI({
-  apiKey: process.env.OPENAI_API_KEY,
-})
+  apiKey: process.env.OPENAI_API_KEY as string, // Fix: Type assertion to avoid TypeScript error
+});
 
 export async function POST(req: Request) {
   try {
-    const { messages, agentType, sessionId } = await req.json()
-    
+    const { messages } = await req.json();
+
     const completion = await openai.chat.completions.create({
-      model: 'gpt-4o-mini',
+      model: "gpt-4o",
       messages,
       temperature: 1,
-      posthogDistinctId: agentType,
-      posthogTraceId: sessionId,
       max_tokens: 1024,
       top_p: 1,
       stream: false,
-      stop: null
-    })
+    });
 
-    console.log('messages', messages);
-    console.log('assistant response:', completion.choices[0].message);
+    console.log("Received messages:", messages);
+    console.log("Assistant response:", completion.choices[0].message);
 
-    return NextResponse.json(completion.choices[0].message)
+    return NextResponse.json(completion.choices[0].message);
   } catch (error) {
-    console.error('OpenAI API Error:', error)
+    console.error("OpenAI API Error:", error);
     return NextResponse.json(
-      { error: 'AI Service Unavailable' },
+      { error: "AI Service Unavailable" },
       { status: 503 }
-    )
+    );
   }
 }
